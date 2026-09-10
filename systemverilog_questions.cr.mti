@@ -1,0 +1,14 @@
+D:/questasim/labs/systemverilog_questions.sv {1 {vlog -work work -vopt -sv -stats=none D:/questasim/labs/systemverilog_questions.sv
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling module Q1
+-- Compiling module Q2
+-- Compiling module Q3
+-- Compiling module Q4
+
+Top level modules:
+	Q1
+	Q2
+	Q3
+	Q4
+
+} {} {}}

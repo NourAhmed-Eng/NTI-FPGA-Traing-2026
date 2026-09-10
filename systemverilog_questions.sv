@@ -1,0 +1,104 @@
+module Q1;
+
+    int arr[] = '{9, 7, 4, 6, 2, 8, 6, 5};
+
+    int even_arr[$];
+    int odd_arr[$];
+
+    initial begin
+
+        foreach (arr[i]) begin
+
+            if (arr[i] % 2 == 0)
+                even_arr.push_back(arr[i]);
+
+            else
+                odd_arr.push_back(arr[i]);
+
+        end
+
+        $display("Even array: %p", even_arr);
+        $display("Odd array:  %p", odd_arr);
+
+    end
+endmodule
+
+
+
+module Q2;
+
+    int arr[] = '{1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1};
+
+    int count = 0;
+    int max_count = 0;
+
+    initial begin
+
+        foreach (arr[i]) begin
+
+            if (arr[i] == 1) begin
+                count++;
+
+                if (count > max_count)
+                    max_count = count;
+
+            end else begin
+                count = 0;
+            end
+
+        end
+
+        $display("MAX. consecutive number : 1 --> %0d", max_count);
+
+    end
+endmodule
+
+
+
+module Q3;
+
+    int arr[] = '{45, 34, 67, 89, 78};
+
+    int max1 = 0;
+    int max2 = 0;
+
+    initial begin
+
+        foreach (arr[i]) begin
+        
+            if (arr[i] > max1) begin
+                max2 = max1;
+                max1 = arr[i];
+                
+            end else if (arr[i] > max2 && arr[i] != max1) begin
+                max2 = arr[i];
+            end
+
+        end
+
+        $display("Second max number: %0d", max2);
+
+    end
+endmodule
+
+
+
+module Q4;
+
+    int arr[] = '{8, 3, 3, 4, 5, 6, 3, 5, 4, 6, 8, 7, 6, 4, 3, 5, 6};
+
+    int freq[10];
+
+    initial begin
+
+        foreach (arr[i]) begin
+            freq[arr[i]]++;
+        end
+
+        foreach (freq[i]) begin
+            if (freq[i] > 0)
+                $display("%0d --> %0d", i, freq[i]);
+        end
+        
+    end
+endmodule
