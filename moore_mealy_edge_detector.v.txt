@@ -1,0 +1,178 @@
+module moore_edge_detector (
+
+    //INPUTS
+    input  wire clk,
+    input  wire rst_n,
+    input  wire level,
+
+    //OUTPUT
+    output reg  tick
+
+);
+
+    reg [1:0] state, next_state;
+
+    always @(posedge clk or negedge rst_n) begin
+
+        if (!rst_n)
+            state <= 0;
+
+        else
+            state <= next_state;
+    end
+
+    always @(*) begin
+
+        case (state)
+
+            2'b00: next_state = level ? 2'b01 : 2'b00;
+            2'b01: next_state = level ? 2'b10 : 2'b00;
+            2'b10: next_state = level ? 2'b10 : 2'b00;
+
+            default: next_state = 2'b00;
+
+        endcase
+    end
+
+    always @(*) begin
+
+        tick = (state == 2'b01);
+
+    end
+
+endmodule
+
+
+module mealy_edge_detector (
+
+    //INPUTS
+    input  wire clk,
+    input  wire rst_n,
+    input  wire level,
+
+    //OUTPUT
+    output reg  tick
+
+);
+
+    reg state, next_state;
+
+    always @(posedge clk or negedge rst_n) begin
+
+        if (!rst_n)
+            state <= 0;
+
+        else
+            state <= next_state;
+    end
+
+    always @(*) begin
+
+        case (state)
+
+            1'b0: next_state = level ? 1'b1 : 1'b0;
+            1'b1: next_state = level ? 1'b1 : 1'b0;
+
+            default: next_state = 1'b0;
+
+        endcase
+
+    end
+
+    always @(*) begin
+
+        tick = (state == 1'b0) && level;
+
+    end
+
+endmodule
+
+
+module edge_detector_topmodule (
+
+    input  wire clk,
+    input  wire rst_n,
+    input  wire level,
+    output wire tick_moore,
+    output wire tick_mealy
+
+);
+
+    moore_edge_detector u_moore (
+
+        .clk(clk),
+        .rst_n(rst_n),
+        .level(level),
+        .tick(tick_moore)
+
+    );
+
+    mealy_edge_detector u_mealy (
+
+        .clk(clk),
+        .rst_n(rst_n),
+        .level(level),
+        .tick(tick_mealy)
+
+    );
+
+endmodule
+
+
+module tb_edge_detector;
+
+    reg clk;
+    reg rst_n;
+    reg level;
+
+    wire tick_moore;
+    wire tick_mealy;
+
+    edge_detector_topmodule dut (
+
+        .clk(clk),
+        .rst_n(rst_n),
+        .level(level),
+        .tick_moore(tick_moore),
+        .tick_mealy(tick_mealy)
+
+    );
+
+    always #5 clk = ~clk;
+
+    initial begin
+
+        $monitor("Time = %0t  clk = %b  rst_n = %b  level = %b  tick_moore = %b  tick_mealy = %b", 
+                 $time, clk, rst_n, level, tick_moore, tick_mealy);
+
+    end
+
+    initial begin
+
+        clk   = 0;
+        rst_n = 0;
+        level = 0;
+
+        #12
+        rst_n = 1;
+
+        // First pulse
+        #10
+        level = 1;
+
+        #30
+        level = 0;
+
+        // Second pulse
+        #20
+        level = 1;
+
+        #30
+        level = 0;
+
+        #20 
+        $finish;
+
+    end
+
+endmodule

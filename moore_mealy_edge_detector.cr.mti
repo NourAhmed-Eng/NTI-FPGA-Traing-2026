@@ -1,0 +1,11 @@
+D:/questasim/labs/moore_mealy_edge_detector.v {1 {vlog -work work -vopt -stats=none D:/questasim/labs/moore_mealy_edge_detector.v
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling module moore_edge_detector
+-- Compiling module mealy_edge_detector
+-- Compiling module edge_detector_topmodule
+-- Compiling module tb_edge_detector
+
+Top level modules:
+	tb_edge_detector
+
+} {} {}}
