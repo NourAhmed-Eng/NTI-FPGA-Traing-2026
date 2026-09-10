@@ -1,0 +1,13 @@
+D:/questasim/labs/mealymoore_overlapping_non_overlapping.v {1 {vlog -work work -vopt -stats=none D:/questasim/labs/mealymoore_overlapping_non_overlapping.v
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling module mealy_overlapping
+-- Compiling module mealy_non_overlapping
+-- Compiling module moore_overlapping
+-- Compiling module moore_non_overlapping
+-- Compiling module seq_det_topmodule
+-- Compiling module seq_det_tb
+
+Top level modules:
+	seq_det_tb
+
+} {} {}}
