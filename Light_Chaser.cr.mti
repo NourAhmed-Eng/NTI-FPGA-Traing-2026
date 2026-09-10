@@ -1,0 +1,12 @@
+D:/questasim/labs/Light_Chaser.v {1 {vlog -work work -vopt -stats=none D:/questasim/labs/Light_Chaser.v
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling module CLK_Div
+-- Compiling module Light_Chaser
+-- Compiling module Light_Chaser_topmodule
+-- Compiling module Light_Chaser_tb
+
+Top level modules:
+	Light_Chaser_topmodule
+	Light_Chaser_tb
+
+} {} {}}
