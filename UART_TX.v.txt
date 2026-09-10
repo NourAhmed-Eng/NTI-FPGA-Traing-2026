@@ -1,0 +1,356 @@
+module parity_calc (
+
+    //INPUTS
+    input wire       clk,
+    input wire       rst_n,
+    input wire [7:0] p_data,
+    input wire       data_valid,
+    input wire       par_typ,     //0:Even, 1:Odd
+
+    //OUTPUT
+    output reg       par_bit
+
+);
+
+    always @(posedge clk or negedge rst_n) begin
+
+        if (!rst_n) begin
+            par_bit <= 0;
+
+        end else if (data_valid) begin
+
+            if (par_typ == 0)
+                par_bit <= ^p_data;      //Even parity
+            else
+                par_bit <= ~(^p_data);   //Odd parity
+        end
+    end
+
+endmodule
+
+
+module serializer (
+
+    //INPUTS
+    input wire       clk,
+    input wire       rst_n,
+    input wire [7:0] p_data,
+    input wire       data_valid,
+    input wire       ser_en,
+
+    //OUTPUTS
+    output reg       ser_data,
+    output reg       ser_done
+
+);
+
+    reg [7:0] shift_reg;
+    reg [2:0] bit_cnt;
+
+    always @(posedge clk or negedge rst_n) begin
+
+        if (!rst_n) begin
+            shift_reg <= 0;
+            bit_cnt   <= 0;
+            ser_data  <= 1;
+            ser_done  <= 0;
+
+        end else if (data_valid) begin
+
+            shift_reg <= p_data;
+            bit_cnt   <= 0;
+            ser_done  <= 0;
+
+        end else if (ser_en) begin
+
+            ser_data  <= shift_reg[0];
+            shift_reg <= shift_reg >> 1;
+            bit_cnt   <= bit_cnt + 1;
+
+            if (bit_cnt == 3'b111)
+                ser_done <= 1;
+            else
+                ser_done <= 0;
+
+        end else begin
+            ser_done <= 0;
+
+        end
+    end
+
+endmodule
+
+
+module tx_mux (
+
+    //INPUTS
+    input wire [1:0] mux_sel,
+    input wire       ser_data,
+    input wire       par_bit,
+
+    //OUTPUT
+    output reg       tx_out
+
+);
+
+    always @(*) begin
+
+        case (mux_sel)
+
+            2'b00:   tx_out = 0;     
+            2'b01:   tx_out = ser_data;
+            2'b10:   tx_out = par_bit; 
+            2'b11:   tx_out = 1;
+
+            default: tx_out = 1;
+
+        endcase
+    end
+
+endmodule
+
+
+module tx_fsm (
+
+    //INPUTS
+    input wire       clk,
+    input wire       rst_n,
+    input wire       data_valid,
+    input wire       par_en,
+    input wire       ser_done,
+
+    //OUTPUTS
+    output reg       ser_en,
+    output reg [1:0] mux_sel,
+    output reg       busy
+
+);
+
+    reg [2:0] current_state, next_state;
+
+    always @(posedge clk or negedge rst_n) begin
+
+        if (!rst_n)
+            current_state <= 0;
+        else
+            current_state <= next_state;
+    end
+
+    always @(*) begin
+
+        case (current_state)
+
+            3'b000:  next_state = data_valid ? 3'b001 : 3'b000;                
+            3'b001:  next_state = 3'b010;                                    
+            3'b010:  next_state = ser_done ? (par_en ? 3'b011 : 3'b100) : 3'b010;
+            3'b011:  next_state = 3'b100;                        
+            3'b100:  next_state = 3'b000;   
+
+            default: next_state = 3'b000;
+
+        endcase
+    end
+
+    always @(*) begin
+
+        ser_en  = 0;
+        busy    = 1;
+        mux_sel = 2'b11;
+
+        case (current_state)
+
+            3'b000: begin
+                busy    = 0;
+                mux_sel = 2'b11;
+            end
+
+            3'b001: begin
+                ser_en  = 1;
+                mux_sel = 2'b00;
+            end
+
+            3'b010: begin
+                ser_en  = 1;
+                mux_sel = 2'b01;
+            end
+
+            3'b011: begin
+                mux_sel = 2'b10;
+            end
+
+            3'b100: begin
+                mux_sel = 2'b11;
+            end
+
+            default: begin
+                busy    = 0;
+                mux_sel = 2'b11;
+            end
+
+        endcase
+
+    end
+
+endmodule
+
+
+module UART_Tx_topmodule (
+
+    input wire       clk,
+    input wire       rst_n,
+    input wire [7:0] p_data,
+    input wire       data_valid,
+    input wire       par_en,
+    input wire       par_typ,
+
+    output wire      tx_out,
+    output wire      busy
+
+);
+
+    wire       ser_en;
+    wire       ser_done;
+    wire       ser_data;
+    wire       par_bit;
+    wire [1:0] mux_sel;
+
+    parity_calc PARITY_BLOCK (
+
+        .clk(clk),
+        .rst_n(rst_n),
+        .p_data(p_data),
+        .data_valid(data_valid),
+        .par_typ(par_typ),
+        .par_bit(par_bit)
+
+    );
+
+    serializer SERIALIZER_BLOCK (
+
+        .clk(clk),
+        .rst_n(rst_n),
+        .p_data(p_data),
+        .data_valid(data_valid),
+        .ser_en(ser_en),
+        .ser_data(ser_data),
+        .ser_done(ser_done)
+
+    );
+
+    tx_fsm FSM_BLOCK (
+
+        .clk(clk),
+        .rst_n(rst_n),
+        .data_valid(data_valid),
+        .par_en(par_en),
+        .ser_done(ser_done),
+        .ser_en(ser_en),
+        .mux_sel(mux_sel),
+        .busy(busy)
+
+    );
+
+    tx_mux MUX_BLOCK (
+
+        .mux_sel(mux_sel),
+        .ser_data(ser_data),
+        .par_bit(par_bit),
+        .tx_out(tx_out)
+        
+    );
+
+endmodule
+
+
+module UART_Tx_tb;
+
+    reg        clk;
+    reg        rst_n;
+    reg  [7:0] p_data;
+    reg        data_valid;
+    reg        par_en;
+    reg        par_typ;
+
+    wire       tx_out;
+    wire       busy;
+
+    UART_Tx_topmodule DUT (
+
+        .clk(clk),
+        .rst_n(rst_n),
+        .p_data(p_data),
+        .data_valid(data_valid),
+        .par_en(par_en),
+        .par_typ(par_typ),
+        .tx_out(tx_out),
+        .busy(busy)
+
+    );
+
+    always #5 clk = ~clk;
+
+    task send_frame(input [7:0] in_data); begin
+
+            wait (busy == 0);
+            @(posedge clk);
+
+            p_data     = in_data;
+            data_valid = 1;
+
+            @(posedge clk);
+            data_valid = 0;
+
+            @(posedge clk);
+            wait (busy == 0);
+            #20;
+
+        end
+
+    endtask
+
+    initial begin
+
+        $monitor("Time = %0t  rst_n = %b  p_data = %b  busy = %b  tx_out = %b", 
+                 $time, rst_n, p_data, busy, tx_out);
+
+    end
+
+    initial begin
+
+        clk        = 0;
+        rst_n      = 0;
+        p_data     = 0;
+        data_valid = 0;
+        par_en     = 0;
+        par_typ    = 0;
+
+        #20;
+        rst_n = 1;
+        #20;
+
+        //TEST 1: No Parity
+        par_en  = 0;
+        par_typ = 0;
+        send_frame(8'b10100101);
+
+        //TEST 2: Even Parity
+        par_en  = 1;
+        par_typ = 0;
+        send_frame(8'b11110011);
+
+        //TEST 3: Odd Parity
+        par_en  = 1;
+        par_typ = 1;
+        send_frame(8'b11110011);
+
+        //TEST 4: Back-to-Back
+        par_en  = 0;
+        send_frame(8'b01010101);
+        send_frame(8'b10101010);
+
+        #50;
+        $finish;
+
+    end
+
+endmodule

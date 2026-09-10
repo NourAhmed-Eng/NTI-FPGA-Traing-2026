@@ -1,0 +1,23 @@
+D:/questasim/labs/UART_SYSTEM.v {1 {vlog -work work -vopt -stats=none D:/questasim/labs/UART_SYSTEM.v
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling module clk_div
+-- Compiling module parity_calc
+-- Compiling module serializer
+-- Compiling module tx_mux
+-- Compiling module tx_fsm
+-- Compiling module UART_Tx_topmodule
+-- Compiling module data_sampling
+-- Compiling module edge_bit_counter
+-- Compiling module deserializer
+-- Compiling module strt_check
+-- Compiling module parity_check
+-- Compiling module stop_check
+-- Compiling module rx_fsm
+-- Compiling module UART_RX_topmodule
+-- Compiling module UART_SYSTEM_topmodule
+-- Compiling module UART_SYSTEM_tb
+
+Top level modules:
+	UART_SYSTEM_tb
+
+} {} {}}

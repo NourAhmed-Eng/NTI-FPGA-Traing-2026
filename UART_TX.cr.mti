@@ -1,0 +1,13 @@
+D:/questasim/labs/UART_TX.v {1 {vlog -work work -vopt -stats=none D:/questasim/labs/UART_TX.v
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling module parity_calc
+-- Compiling module serializer
+-- Compiling module tx_mux
+-- Compiling module tx_fsm
+-- Compiling module UART_Tx_topmodule
+-- Compiling module UART_Tx_tb
+
+Top level modules:
+	UART_Tx_tb
+
+} {} {}}
