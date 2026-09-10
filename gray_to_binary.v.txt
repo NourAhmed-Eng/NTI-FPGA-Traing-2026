@@ -1,0 +1,43 @@
+module gray_to_binary (
+
+    input  wire [3:0] gray,
+    output wire [3:0] binary
+
+);
+
+    assign binary[3] = gray[3];
+    assign binary[2] = binary[3] ^ gray[2];
+    assign binary[1] = binary[2] ^ gray[1];
+    assign binary[0] = binary[1] ^ gray[0];
+
+endmodule
+
+
+module gray_to_binary_tb;
+
+    reg  [3:0] gray;
+    wire [3:0] binary;
+
+    gray_to_binary dut (
+
+        .gray(gray),
+        .binary(binary)
+
+    );
+
+    integer i;
+
+    initial begin
+
+        $monitor("Time=%0t Gray=%b Binary=%b",
+                  $time, gray, binary);
+
+        for (i = 0; i < 16; i = i + 1) begin
+            gray = i[3:0];
+
+            #10;
+        end
+        
+        $finish;
+    end
+endmodule

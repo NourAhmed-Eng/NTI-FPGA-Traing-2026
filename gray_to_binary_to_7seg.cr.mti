@@ -1,0 +1,11 @@
+D:/questasim/labs/gray_to_binary_to_7seg.v {1 {vlog -work work -vopt -stats=none D:/questasim/labs/gray_to_binary_to_7seg.v
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling module gray_to_binary
+-- Compiling module binary_to_7seg
+-- Compiling module gray_to_binary_to_7seg
+-- Compiling module gray_to_binary_to_7seg_tb
+
+Top level modules:
+	gray_to_binary_to_7seg_tb
+
+} {} {}}
