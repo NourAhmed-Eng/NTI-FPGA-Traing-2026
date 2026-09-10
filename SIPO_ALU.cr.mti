@@ -1,0 +1,11 @@
+D:/questasim/labs/SIPO_ALU.v {1 {vlog -work work -vopt -stats=none D:/questasim/labs/SIPO_ALU.v
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling module sipo
+-- Compiling module ALU
+-- Compiling module SIPO_ALU
+-- Compiling module SIPO_ALU_tb
+
+Top level modules:
+	SIPO_ALU_tb
+
+} {} {}}

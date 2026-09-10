@@ -1,0 +1,78 @@
+module sipo #(parameter WIDTH = 20) (
+
+    //INPUTS
+    input wire clk,
+    input wire rst_n,
+    input wire shift_en,
+    input wire serial_in,
+
+    //OUTPUT
+    output reg [WIDTH-1:0] parallel_out
+);
+
+    always @(posedge clk or negedge rst_n) begin
+
+        if (!rst_n)
+            parallel_out <= 0;
+
+        else if (shift_en)
+            parallel_out <= {parallel_out[WIDTH-2:0], serial_in};
+
+    end
+
+endmodule
+
+module sipo_tb;
+
+    reg clk;
+    reg rst_n;
+    reg shift_en;
+    reg serial_in;
+
+    wire [19:0] parallel_out;
+
+    sipo #(20) DUT (
+        .clk(clk),
+        .rst_n(rst_n),
+        .shift_en(shift_en),
+        .serial_in(serial_in),
+        .parallel_out(parallel_out)
+    );
+
+    always #5 clk = ~clk;
+
+    initial begin
+
+        clk = 0;
+        rst_n = 0;
+        shift_en = 0;
+        serial_in = 0;
+
+        #10;
+
+        rst_n = 1;
+        shift_en = 1;
+
+        serial_in = 1;
+        #10;
+
+        serial_in = 0;
+        #10;
+
+        serial_in = 1;
+        #10;
+
+        serial_in = 1;
+        #10;
+
+        serial_in = 0;
+        #10;
+
+        shift_en = 0;
+        #20;
+
+        $finish;
+
+    end
+
+endmodule

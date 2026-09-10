@@ -1,0 +1,9 @@
+D:/questasim/labs/SPIO.v {1 {vlog -work work -vopt -stats=none D:/questasim/labs/SPIO.v
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling module sipo
+-- Compiling module sipo_tb
+
+Top level modules:
+	sipo_tb
+
+} {} {}}
