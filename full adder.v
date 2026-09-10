@@ -1,0 +1,41 @@
+module full_adderS (
+
+    //inputs
+    input  wire A,
+    input  wire B,
+    input  wire Cin,
+
+    //Outputs
+    output wire Sum,
+    output wire Cout
+);
+
+    wire w1, w2, w3;
+
+    xor (w1, A, B);        //A ^ B
+    xor (Sum, w1, Cin);  //A ^ B ^ Cin
+    
+    and (w2, A, B);       //A & B
+    and (w3, w1, Cin);    //(A ^ B) & Cin
+    
+    or (Cout, w2, w3);
+
+endmodule
+
+
+module full_adderD(
+
+    //inputs
+    input  wire A,
+    input  wire B,
+    input  wire Cin,
+
+    //outputs
+    output wire Sum,
+    output wire Cout
+);
+
+assign Sum = A ^ B ^ Cin;
+assign Cout = (A & B) | (Cin & (A ^ B));
+
+endmodule
